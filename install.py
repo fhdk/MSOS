@@ -369,7 +369,7 @@ def main(args):
     os.system(f'sed -i "/^ParallelDownloads/i ILoveCandy" {INSTALL_ROOT}/etc/pacman.conf')
     # ---- inject nix repo ----
     os.system(f"echo '\n\n[nixrepo]' >> {INSTALL_ROOT}/etc/pacman.conf")
-    os.system(f"echo 'SigLevel = Optional' >> {INSTALL_ROOT}/etc/pacman.conf")
+    os.system(f"echo 'SigLevel = Optional TrusAll' >> {INSTALL_ROOT}/etc/pacman.conf")
     os.system(f"echo 'Server = https://uex.dk/nixrepo' >> {INSTALL_ROOT}/etc/pacman.conf")
 
     attention("configure clock")
@@ -479,8 +479,10 @@ def main(args):
         os.system(f"echo 'export XDG_RUNTIME_DIR=\"/run/user/1000\"' >> /home/{username}/.bashrc")
         os.system(f"arch-chroot {INSTALL_ROOT} chown -R {username} /home/{username}")
         os.system(f"arch-chroot {INSTALL_ROOT} systemctl enable gdm")
+        os.system(f"arch-chroot {INSTALL_ROOT} systemctl enable systemd-timesyncd")
 
         os.system(f"cp -r {INSTALL_ROOT}/var/lib/pacman/* {INSTALL_ROOT}/usr/share/mast/db")
+
         os.system(f"btrfs sub snap -r {INSTALL_ROOT} {INSTALL_ROOT}/{SNAPSHOTS_DIR}/rootfs/snapshot-1")
         os.system(f"btrfs sub del {INSTALL_ROOT}/{SNAPSHOTS_DIR}/etc/etc-tmp")
         # os.system(f"btrfs sub del {INSTALL_ROOT}/{MAST_SNAPSHOTS_DIR}/var/var-tmp")
@@ -517,42 +519,8 @@ def main(args):
         os.system(f"echo 'export XDG_RUNTIME_DIR=\"/run/user/1000\"' >> /home/{username}/.bashrc")
         os.system(f"arch-chroot {INSTALL_ROOT} chown -R {username} /home/{username}")
         os.system(f"arch-chroot {INSTALL_ROOT} systemctl enable sddm")
-        os.system(f"cp -r {INSTALL_ROOT}/var/lib/pacman/* {INSTALL_ROOT}/usr/share/mast/db")
+        os.system(f"arch-chroot {INSTALL_ROOT} systemctl enable systemd-timesyncd")
 
-        os.system(f"btrfs sub snap -r {INSTALL_ROOT} {INSTALL_ROOT}/{SNAPSHOTS_DIR}/rootfs/snapshot-1")
-        os.system(f"btrfs sub del {INSTALL_ROOT}/{SNAPSHOTS_DIR}/etc/etc-tmp")
-        # os.system(f"btrfs sub del {INSTALL_ROOT}/{MAST_SNAPSHOTS_DIR}/var/var-tmp")
-        os.system(f"btrfs sub del {INSTALL_ROOT}/{SNAPSHOTS_DIR}/boot/boot-tmp")
-        os.system(f"btrfs sub create {INSTALL_ROOT}/{SNAPSHOTS_DIR}/etc/etc-tmp")
-        # os.system(f"btrfs sub create {INSTALL_ROOT}/{MAST_SNAPSHOTS_DIR}/var/var-tmp")
-        os.system(f"btrfs sub create {INSTALL_ROOT}/{SNAPSHOTS_DIR}/boot/boot-tmp")
-        # os.system(f"cp --reflink=auto -r {INSTALL_ROOT}/var/* {INSTALL_ROOT}/{MAST_SNAPSHOTS_DIR}/var/var-tmp")
-        # for i in ("pacman", "systemd"):
-        #     os.system(f"mkdir -p {INSTALL_ROOT}/{MAST_SNAPSHOTS_DIR}/var/var-tmp/lib/{i}")
-        # os.system(f"cp --reflink=auto -r {INSTALL_ROOT}/var/lib/pacman/* {INSTALL_ROOT}/{MAST_SNAPSHOTS_DIR}/var/var-tmp/lib/pacman/")
-        # os.system(f"cp --reflink=auto -r {INSTALL_ROOT}/var/lib/systemd/* {INSTALL_ROOT}/{MAST_SNAPSHOTS_DIR}/var/var-tmp/lib/systemd/")
-        os.system(f"cp --reflink=auto -r {INSTALL_ROOT}/boot/* {INSTALL_ROOT}/{SNAPSHOTS_DIR}/boot/boot-tmp")
-        os.system(f"cp --reflink=auto -r {INSTALL_ROOT}/etc/* {INSTALL_ROOT}/{SNAPSHOTS_DIR}/etc/etc-tmp")
-        # os.system(f"btrfs sub snap -r {INSTALL_ROOT}/{MAST_SNAPSHOTS_DIR}/var/var-tmp {INSTALL_ROOT}/{MAST_SNAPSHOTS_DIR}/var/var-1")
-        os.system(f"btrfs sub snap -r {INSTALL_ROOT}/{SNAPSHOTS_DIR}/boot/boot-tmp {INSTALL_ROOT}/{SNAPSHOTS_DIR}/boot/boot-1")
-        os.system(f"btrfs sub snap -r {INSTALL_ROOT}/{SNAPSHOTS_DIR}/etc/etc-tmp {INSTALL_ROOT}/{SNAPSHOTS_DIR}/etc/etc-1")
-        os.system(f"btrfs sub snap {INSTALL_ROOT}/{SNAPSHOTS_DIR}/rootfs/snapshot-1 {INSTALL_ROOT}/{SNAPSHOTS_DIR}/rootfs/snapshot-tmp")
-        os.system(f"arch-chroot {INSTALL_ROOT} btrfs sub set-default /{SNAPSHOTS_DIR}/rootfs/snapshot-tmp")
-
-    elif DesktopInstall == 3:
-        os.system(f"echo '1' > {INSTALL_ROOT}/{MAST_SNAP_FILE}")
-
-        username = add_desktop_user()
-
-        os.system(f"arch-chroot {INSTALL_ROOT} usermod -aG audio,input,video,wheel {username}")
-        os.system(f"arch-chroot {INSTALL_ROOT} passwd -l root")
-        os.system(f"chmod +w {INSTALL_ROOT}/etc/sudoers")
-        os.system(f"echo '%wheel ALL=(ALL:ALL) ALL' >> {INSTALL_ROOT}/etc/sudoers")
-        os.system(f"chmod -w {INSTALL_ROOT}/etc/sudoers")
-        os.system(f"arch-chroot {INSTALL_ROOT} mkdir /home/{username}")
-        os.system(f"echo 'export XDG_RUNTIME_DIR=\"/run/user/1000\"' >> /home/{username}/.bashrc")
-        os.system(f"arch-chroot {INSTALL_ROOT} chown -R {username} /home/{username}")
-        os.system(f"arch-chroot {INSTALL_ROOT} systemctl enable gdm")
         os.system(f"cp -r {INSTALL_ROOT}/var/lib/pacman/* {INSTALL_ROOT}/usr/share/mast/db")
 
         os.system(f"btrfs sub snap -r {INSTALL_ROOT} {INSTALL_ROOT}/{SNAPSHOTS_DIR}/rootfs/snapshot-1")
