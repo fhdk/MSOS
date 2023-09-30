@@ -211,7 +211,6 @@ def main(args):
     os.system(f"umount -R -f {INSTALL_ROOT}")
     os.system(f"umount -R -f {INSTALL_ROOT}")
     os.system(f"sgdisk --zap-all {device}")
-    os.system(f"dd if=/dev/zero of={device} bs=1G status=progress")
     os.system(f"sgdisk --mbrtogpt {device}")
     os.system(f"sgdisk --new 1::+1G --typecode 1:ef00 --change-name 1:'EFI System' {device}")
     os.system(f"sgdisk --new 2::: --typecode 2:8300 --change-name 2:'Linux filesystem' {device}")
