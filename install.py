@@ -231,8 +231,7 @@ def main(args):
         header("Select install profile")
         default('''1. Minimal CLI system
     2. Desktop Gnome (vanilla)
-    3. Desktop Plasma (vanilla)
-    4. Desktop Xfce (vanilla)''')
+    3. Desktop Plasma (vanilla)''')
         InstallProfile = str(input("# > "))
         if InstallProfile == "1":
             DesktopInstall = BASE
@@ -353,9 +352,9 @@ def main(args):
     with open(f'{INSTALL_ROOT}/etc/fstab', 'a') as f:
         f.write(f'UUID={root_uuid} / btrfs subvol=@,compress=zstd,noatime,ro 0 0\n')
         for mntdir in mntdirs[1:]:
-            if mntdir == "swapfile":
-                f.write(f'/swapfile none swap defaults 0 0\n')
-                continue
+            # if mntdir == "swapfile":
+            #     f.write(f'/swapfile none swap defaults 0 0\n')
+            #     continue
             f.write(f'UUID={root_uuid} /{mntdir} btrfs subvol=@{mntdir},compress=zstd,noatime 0 0\n')
         if efi:
             f.write(f'UUID={esp_uuid} /boot/efi vfat umask=0077 0 2\n')
