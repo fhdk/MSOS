@@ -286,24 +286,24 @@ def main(args):
     # BEGIN PREPARE BTRFS
     header("Prepare btrfs ...")
     os.system(f"mount {root} {INSTALL_ROOT}")
-    btrdirs = ["@", f"@{SNAPSHOTS_DIR}", "@home", "@var", "@etc", "@boot", "@swapfile"]
-    mntdirs = ["", f"{SNAPSHOTS_DIR}", "home", "var", "etc", "boot", "swapfile"]
+    btrdirs = ["@", f"@{SNAPSHOTS_DIR}", "@home", "@var", "@etc", "@boot"]
+    mntdirs = ["", f"{SNAPSHOTS_DIR}", "home", "var", "etc", "boot"]
 
     for btrdir in btrdirs:
         fs_sub_create(f"{INSTALL_ROOT}/{btrdir}")
     os.system(f"umount -R -f {INSTALL_ROOT}")
     for mntdir in mntdirs:
         os.system(f"mkdir -p {INSTALL_ROOT}/{mntdir}")
-        if mntdir == "swapfile":
-            swap = mntdir
-            os.system(f"mount {root} -o subvol={btrdirs[mntdirs.index(swap)]},compress=none,noatime {INSTALL_ROOT}/{swap}")
-            os.system(f"truncate -s 0 {INSTALL_ROOT}/{swap}")
-            os.system(f"chattr +C {INSTALL_ROOT}/{swap}")
-            os.system(f"dd if=/dev/zero of=/{swap} bs=1M count=4096 status=progress")
-            os.system(f"chmod 600 /{swap}")
-            os.system(f"mkswap /{swap}")
-            os.system(f"swapon /{swap}")
-            continue
+        # if mntdir == "swapfile":
+        #     swap = mntdir
+        #     os.system(f"mount {root} -o subvol={btrdirs[mntdirs.index(swap)]},compress=none,noatime {INSTALL_ROOT}/{swap}")
+        #     os.system(f"truncate -s 0 {INSTALL_ROOT}/{swap}")
+        #     os.system(f"chattr +C {INSTALL_ROOT}/{swap}")
+        #     os.system(f"dd if=/dev/zero of=/{swap} bs=1M count=4096 status=progress")
+        #     os.system(f"chmod 600 /{swap}")
+        #     os.system(f"mkswap /{swap}")
+        #     os.system(f"swapon /{swap}")
+        #     continue
         os.system(f"mount {root} -o subvol={btrdirs[mntdirs.index(mntdir)]},compress=zstd,noatime {INSTALL_ROOT}/{mntdir}")
     for i in ("tmp", "root"):
         os.system(f"mkdir -p {INSTALL_ROOT}/{i}")
